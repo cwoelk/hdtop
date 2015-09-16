@@ -1,0 +1,11 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/fsouza/go-dockerclient",
+			"repository": "https://github.com/fsouza/go-dockerclient",
+			"revision": "c9ad0ce23f68428421adfc6ced9e6123f54788a5",
+			"branch": "master"
+		}
+	]
+}
