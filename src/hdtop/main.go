@@ -5,7 +5,16 @@ import (
 	"github.com/fsouza/go-dockerclient"
 	"os"
 	"strings"
+	"time"
 )
+
+func topLoop(client *docker.Client, topChan chan<- docker.TopResult) {
+	for {
+		topResult, _ := client.TopContainer(os.Args[1], strings.Join(os.Args[2:], " "))
+		topChan <- topResult
+		time.Sleep(100 * time.Millisecond)
+	}
+}
 
 func main() {
 	var (
@@ -18,17 +27,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	topResult, _ := client.TopContainer(os.Args[1], strings.Join(os.Args[2:], " "))
+	topChan := make(chan docker.TopResult)
 
-	for _, title := range topResult.Titles {
-		fmt.Printf("%s\t", title)
-	}
-	fmt.Println()
+	go topLoop(client, topChan)
 
-	for _, process := range topResult.Processes {
-		for _, value := range process {
-			fmt.Printf("%s\t", value)
+	for {
+		select {
+		case topResult := <-topChan:
+			for _, title := range topResult.Titles {
+				fmt.Printf("%s\t", title)
+			}
+			fmt.Println()
+
+			for _, process := range topResult.Processes {
+				for _, value := range process {
+					fmt.Printf("%s\t", value)
+				}
+				fmt.Println()
+			}
 		}
-		fmt.Println()
 	}
 }
