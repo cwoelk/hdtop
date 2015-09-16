@@ -19,5 +19,16 @@ func main() {
 	}
 
 	topResult, _ := client.TopContainer(os.Args[1], strings.Join(os.Args[2:], " "))
-	fmt.Printf("%#v", topResult)
+
+	for _, title := range topResult.Titles {
+		fmt.Printf("%s\t", title)
+	}
+	fmt.Println()
+
+	for _, process := range topResult.Processes {
+		for _, value := range process {
+			fmt.Printf("%s\t", value)
+		}
+		fmt.Println()
+	}
 }
